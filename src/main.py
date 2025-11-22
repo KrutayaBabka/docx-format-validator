@@ -54,7 +54,8 @@ def main():
     # -----------------------------
     report: List[ReportItem]
     docx: DocumentObject
-    report, docx = analyze_docx(docx_path)
+    docx_fixed: DocumentObject
+    report, docx, docx_fixed = analyze_docx(docx_path)
 
     total_issues: int = len(report)
 
@@ -80,6 +81,9 @@ def main():
     # Optional console summary
     if total_issues > 0:
         print("⚠️ Some formatting issues were found and highlighted in red. Please check the report file for details.")
+        fixed_doc_path = Path(save_dir) / f"{base_name}_fixed.docx"
+        save_docx(docx_fixed, fixed_doc_path)
+        print(f"✅ Auto-fixed file saved as: {fixed_doc_path}")
     else:
         print("🎉 No formatting issues found. The document fully conforms to required standards.")
 
