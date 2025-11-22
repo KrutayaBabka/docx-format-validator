@@ -5,14 +5,15 @@ Module for checking DOCX documents for font compliance.
 Highlights runs with incorrect fonts in red and returns the total number of discrepancies. 
 """
 
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from docx.document import Document as DocumentObject
 from docx.text.run import Run
 from docx import Document
 from docx_utils.font_check import check_paragraph_font, check_table_font
+from config.config import ReportItem
 
 
-def analyze_docx(docx_path: str) -> Tuple[List[Run], DocumentObject]:
+def analyze_docx(docx_path: str) -> Tuple[List[ReportItem], DocumentObject]:
     """
     Checks a DOCX file for font compliance with TARGET_FONT.
     Highlights runs with incorrect fonts in red in memory only.
@@ -21,10 +22,10 @@ def analyze_docx(docx_path: str) -> Tuple[List[Run], DocumentObject]:
         docx_path (str): Path to the original DOCX file.
     
     Returns:
-        Tuple[List[Run], DocumentObject]: A tuple containing a list of runs with font discrepancies and the loaded Document object with highlights.
+        Tuple[List[ReportItem], DocumentObject]: A tuple containing a list of runs with font discrepancies and the loaded Document object with highlights.
     """
     docx: DocumentObject = Document(docx_path)
-    report: List[Run] = []
+    report: List[ReportItem] = []
 
     # Check all paragraphs
     for paragraph in docx.paragraphs:

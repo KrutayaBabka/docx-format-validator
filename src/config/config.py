@@ -7,12 +7,14 @@ Contains global constants and platform-specific environment setup.
 
 import sys
 import os
+from typing import Dict
 
 
 # -----------------------------
 # Target font for the project
 # -----------------------------
 TARGET_FONT = "Times New Roman"
+ReportItem = Dict[str, object]   # {"run": Run, "paragraph_text": str, "reason": str}
 
 
 # -----------------------------

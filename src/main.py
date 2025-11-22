@@ -13,8 +13,9 @@ from docx.text.run import Run
 import tkinter as tk
 from tkinter import filedialog
 from docx_utils.docx_operations import analyze_docx, save_docx
-from page_analysis.page_check import count_issues_by_page
 from pathlib import Path
+
+from config.config import ReportItem
 
 
 def main():
@@ -51,7 +52,7 @@ def main():
     # Check the document and save a new copy
     # -----------------------------
     # Analyze document
-    report: List[Run]
+    report: List[ReportItem]
     docx: DocumentObject
     report, docx = analyze_docx(docx_path)
 
@@ -67,9 +68,6 @@ def main():
     # -----------------------------
     if total_issues > 0:
         print("All problematic text has been highlighted in red.\n")
-        pages_with_issues: List[int] = count_issues_by_page(checked_doc_path)
-        for page_num in pages_with_issues:
-            print(f"Issue detected on page {page_num}")
     else:
         print("The document fully conforms to the Times New Roman font.")
 

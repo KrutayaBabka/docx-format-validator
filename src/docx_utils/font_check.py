@@ -1,62 +1,76 @@
 """
 font_check.py
 
-Module for checking fonts in a DOCX document.
-Highlights runs with incorrect fonts in red and counts discrepancies.
+Module for checking fonts and font sizes in a DOCX document.
+Highlights runs with incorrect fonts/sizes in red and records discrepancies
+as tuples (run, reason) in the report list.
 """
 
 from typing import List, Optional
-from docx.shared import RGBColor
-from config.config import TARGET_FONT
+from docx.shared import RGBColor, Pt
+from config.config import TARGET_FONT, ReportItem
 from docx.text.paragraph import Paragraph
 from docx.table import Table
 from docx.text.run import Run
 
-# -----------------------------
-# Highlight a run if its font is different from TARGET_FONT
-# -----------------------------
-def highlight_run_if_wrong_font(run: Run, report: List[Run]) -> None:
+
+def highlight_run(run: Run, paragraph: Paragraph, report: List[ReportItem], reason: str) -> None:
     """
-    Checks the font of a run and highlights it in red if it doesn't match TARGET_FONT.
-    
+    Highlight the given run in red and append a reasoned dictionary to report.
+
     Args:
-        run: docx.text.run.Run object.
-        report: list to store runs with font discrepancies.
+        run: docx.text.run.Run object to highlight.
+        paragraph: the Paragraph object containing this run (for context)
+        report: list that collects dicts with run, paragraph_text, and reason.
+        reason: short textual description why this run is considered incorrect.
     """
-    font: Optional[str] = run.font.name
-    if font is None:
-        # None indicates the run uses the default style, considered OK
-        return
-    if font != TARGET_FONT:
-        report.append(run)  # Store the Run object itself
-        run.font.color.rgb = RGBColor(255, 0, 0)  # Highlight in red
+    run.font.color.rgb = RGBColor(255, 0, 0)
+    report.append({
+        "run": run,
+        "paragraph_text": paragraph.text,
+        "reason": reason
+    })
 
 
-# -----------------------------
-# Check all runs in a paragraph
-# -----------------------------
-def check_paragraph_font(paragraph: Paragraph, report: List[Run]) -> None:
+def check_run_style(run: Run, paragraph: Paragraph, report: List[ReportItem]) -> None:
     """
-    Checks each run in a paragraph for font discrepancies.
-    
-    Args:
-        paragraph: docx.text.paragraph.Paragraph object.
-        report: list to store counts of discrepancies.
+    Check a single run for font family and font size rules and highlight it
+    if any rule is violated. Appends (run, reason) to report for each violation.
+
+    Rules:
+      - Font size must be between 12 and 14 pt (inclusive)
+      - Font family must equal TARGET_FONT when explicitly set
+    """
+    font = run.font
+
+    # Font family check
+    font_name: Optional[str] = font.name
+    if font_name is not None and font_name != TARGET_FONT:
+        highlight_run(run, paragraph, report,
+                      f"Wrong font family: {font_name} (expected {TARGET_FONT})")
+
+    # Font size check
+    size: Optional[Pt] = font.size
+    if size is None:
+        return  # No explicit size (inherits style) — treat as OK
+
+    size_pt = size.pt
+    if not (12 <= size_pt <= 14):
+        highlight_run(run, paragraph, report,
+                      f"Text should be 12-14 pt (found {size_pt} pt)")
+
+
+def check_paragraph_font(paragraph: Paragraph, report: List[ReportItem]) -> None:
+    """
+    Check all runs in a paragraph for font-family and size issues.
     """
     for run in paragraph.runs:
-        highlight_run_if_wrong_font(run, report)
+        check_run_style(run, paragraph, report)
 
 
-# -----------------------------
-# Check all paragraphs in a table
-# -----------------------------
-def check_table_font(table: Table, report: List[Run]) -> None:
+def check_table_font(table: Table, report: List[ReportItem]) -> None:
     """
-    Checks all cells and paragraphs in a table for font discrepancies.
-    
-    Args:
-        table: docx.table.Table object.
-        report: list to store counts of discrepancies.
+    Check all paragraphs inside all cells of a table.
     """
     for row in table.rows:
         for cell in row.cells:
