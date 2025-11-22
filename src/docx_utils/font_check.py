@@ -8,7 +8,7 @@ as tuples (run, reason) in the report list.
 
 from typing import List, Optional
 from docx.shared import RGBColor, Pt
-from config.config import TARGET_FONT, ReportItem
+from config.config import TARGET_FONT, ReportItem, MIN_FONT_SIZE, MAX_FONT_SIZE
 from docx.text.paragraph import Paragraph
 from docx.table import Table
 from docx.text.run import Run
@@ -55,9 +55,9 @@ def check_run_style(run: Run, paragraph: Paragraph, report: List[ReportItem]) ->
         return  # No explicit size (inherits style) — treat as OK
 
     size_pt = size.pt
-    if not (12 <= size_pt <= 14):
+    if not (MIN_FONT_SIZE <= size_pt <= MAX_FONT_SIZE):
         highlight_run(run, paragraph, report,
-                      f"Text should be 12-14 pt (found {size_pt} pt)")
+                      f"Text should be {MIN_FONT_SIZE}-{MAX_FONT_SIZE} pt (found {size_pt} pt)")
 
 
 def check_paragraph_font(paragraph: Paragraph, report: List[ReportItem]) -> None:

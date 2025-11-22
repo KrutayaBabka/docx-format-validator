@@ -16,6 +16,9 @@ from typing import Dict
 TARGET_FONT = "Times New Roman"
 ReportItem = Dict[str, object]   # {"run": Run, "paragraph_text": str, "reason": str}
 
+# Font size constraints
+MIN_FONT_SIZE = 12
+MAX_FONT_SIZE = 14
 
 # -----------------------------
 # Configure Tcl/Tk environment on Windows
