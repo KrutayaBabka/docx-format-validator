@@ -61,20 +61,6 @@ def is_table_caption(paragraph: Paragraph) -> bool:
     return bool(re.match(r"^Табл\.\s*\d*", text))
 
 
-def is_valid_caption(paragraph: Paragraph) -> bool:
-    """
-    Check that a caption paragraph contains text after 'Рис. №' or 'Табл. №'.
-    """
-    text = paragraph.text.strip()
-    if is_image_caption(paragraph):
-        match = re.match(r"^Рис\.\s*\d+\.\s*(\S+.*)$", text)
-        return bool(match)
-    if is_table_caption(paragraph):
-        match = re.match(r"^Табл\.\s*\d+\.\s*(\S+.*)$", text)
-        return bool(match)
-    return True 
-
-
 def check_paragraph_format(paragraph: Paragraph, report: List[ReportItem], check_first_line: bool = True) -> None:
     """
     Check indentation and line spacing for a single paragraph.
@@ -146,8 +132,24 @@ def check_alignment_and_indent(docx: DocumentObject, report: List[ReportItem]) -
             highlight_alignment(paragraph, report, "Normal text should be justified")
 
         if is_image_caption(paragraph) or is_table_caption(paragraph):
-            if not is_valid_caption(paragraph):
-                highlight_alignment(paragraph, report, "Caption must contain text after number")
+            text = paragraph.text.strip()
+            # Check caption content
+            if is_image_caption(paragraph):
+                match = re.match(r"^Рис\.\s*\d+\.\s*(\S+.*)$", text)
+                if not match:
+                    highlight_alignment(paragraph, report, "Caption must contain text after number")
+                    continue
+            elif is_table_caption(paragraph):
+                match = re.match(r"^Табл\.\s*\d+\.\s*(\S+.*)$", text)
+                if not match:
+                    highlight_alignment(paragraph, report, "Caption must contain text after number")
+                    continue
+
+            # Check caption text format (plain)
+            for run in paragraph.runs:
+                if run.bold or run.italic or run.underline:
+                    highlight_alignment(paragraph, report, "Caption text must be plain (not bold, italic, or underlined)")
+                    break
 
         # Check formatting (including first-line indentation)
         check_paragraph_format(paragraph, report, check_first_line=True)
