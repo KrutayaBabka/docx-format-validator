@@ -11,7 +11,7 @@ from docx.text.run import Run
 from docx import Document
 from docx_utils.font_check import check_paragraph_font, check_table_font
 from config.config import ReportItem
-from docx_utils.alignment_check import check_alignment
+from docx_utils.alignment_check import check_alignment_and_indent
 from docx_utils.page_margins import check_page_margins
 
 def analyze_docx(docx_path: str) -> Tuple[List[ReportItem], DocumentObject]:
@@ -36,7 +36,7 @@ def analyze_docx(docx_path: str) -> Tuple[List[ReportItem], DocumentObject]:
     for table in docx.tables:
         check_table_font(table, report)
 
-    check_alignment(docx, report)
+    check_alignment_and_indent(docx, report)
     
     check_page_margins(docx, report)
 

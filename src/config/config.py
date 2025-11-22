@@ -29,6 +29,11 @@ BOTTOM_MARGIN_CM = 2
 LEFT_MARGIN_CM = 2
 RIGHT_MARGIN_CM = 1
 
+# Indentation constants (in cm)
+FIRST_LINE_INDENT_CM = 1.25
+LEFT_INDENT_CM = 0
+RIGHT_INDENT_CM = 0
+
 # -----------------------------
 # Configure Tcl/Tk environment on Windows
 # -----------------------------
