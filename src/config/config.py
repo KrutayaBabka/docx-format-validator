@@ -34,6 +34,9 @@ FIRST_LINE_INDENT_CM = 1.25
 LEFT_INDENT_CM = 0
 RIGHT_INDENT_CM = 0
 
+# Line spacing requirement
+LINE_SPACING = 1.5
+
 # -----------------------------
 # Configure Tcl/Tk environment on Windows
 # -----------------------------
