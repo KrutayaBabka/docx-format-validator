@@ -11,6 +11,7 @@ from docx.shared import RGBColor
 from docx.text.paragraph import Paragraph
 from docx.document import Document as DocumentObject
 from config.config import ReportItem
+from config.config import ReportItem, TITLE_PAGE_PATTERN
 import re
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
@@ -35,16 +36,17 @@ def highlight_alignment(paragraph: Paragraph, report: List[ReportItem], reason: 
 
 def is_title_page(paragraphs: List[Paragraph], index: int) -> bool:
     """
-    Determine if a paragraph belongs to the title page based on 'Moscow <year> g.' pattern.
+    Determine if a paragraph belongs to the title page based on TITLE_PAGE_PATTERN.
 
     Args:
         paragraphs: list of all paragraphs in the document.
         index: index of the current paragraph.
+
     Returns:
         True if the paragraph belongs to the title page.
     """
     text = paragraphs[index].text.strip()
-    return bool(re.search(r"Москва\s+\d{4}\s+г\.", text))
+    return bool(re.search(TITLE_PAGE_PATTERN, text))
 
 
 def is_image_caption(paragraph: Paragraph) -> bool:

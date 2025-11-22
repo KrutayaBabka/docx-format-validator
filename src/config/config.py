@@ -20,6 +20,9 @@ ReportItem = Dict[str, object]   # {"run": Run, "paragraph_text": str, "reason":
 MIN_FONT_SIZE = 12
 MAX_FONT_SIZE = 14
 
+# Pattern to detect title page (e.g., "Москва 2025 г.")
+TITLE_PAGE_PATTERN = r"Москва\s+\d{4}\s+г\."
+
 # -----------------------------
 # Configure Tcl/Tk environment on Windows
 # -----------------------------
