@@ -47,38 +47,41 @@ def main():
     # Construct the new filename: original_name + "_checked"
     base_name: str = Path(docx_path).stem
     checked_doc_path: Path = Path(save_dir) / f"{base_name}_checked.docx"
+    report_path: Path = Path(save_dir) / f"{base_name}_report.txt"
 
     # -----------------------------
     # Check the document and save a new copy
     # -----------------------------
-    # Analyze document
     report: List[ReportItem]
     docx: DocumentObject
     report, docx = analyze_docx(docx_path)
-
-    for issue in report:
-        run = issue.get('run')
-        run_text = run.text if run else "<No run text>"
-        print(f"Issue found: '{run_text}' - {issue['reason']}")
-        print(f"Context paragraph: '{issue['paragraph_text']}'\n")
 
     total_issues: int = len(report)
 
     # Save a checked copy of the document
     save_docx(docx, checked_doc_path)
     print(f"\n✅ Checked file saved as: {checked_doc_path}")
-
-    # Summary of findings
     print(f"Total issues found: {total_issues}")
 
+    # Save report to a text file
+    with open(report_path, "w", encoding="utf-8") as f:
+        if total_issues == 0:
+            f.write("No formatting issues found. Document conforms to standards.\n")
+        else:
+            f.write(f"Total issues found: {total_issues}\n\n")
+            for issue in report:
+                run = issue.get("run")
+                run_text = run.text if run else "<No run text>"
+                f.write(f"Issue found: '{run_text}' - {issue['reason']}\n")
+                f.write(f"Context paragraph: '{issue['paragraph_text']}'\n\n")
+
+    print(f"Report saved as: {report_path}")
+
+    # Optional console summary
     if total_issues > 0:
-        print("⚠️ Some formatting issues were found and highlighted in red:")
-        print("- Paragraph alignment")
-        print("- First-line, left, and right indents")
-        print("- Line spacing")
-        print("\nPlease review highlighted text and correct formatting as needed.\n")
+        print("⚠️ Some formatting issues were found and highlighted in red. Please check the report file for details.")
     else:
-        print("🎉 No formatting issues found. The document conforms to the required standards (Times New Roman, 1.5 spacing, correct indents).")
+        print("🎉 No formatting issues found. The document fully conforms to required standards.")
 
 
 if __name__ == "__main__":
