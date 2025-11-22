@@ -23,6 +23,12 @@ MAX_FONT_SIZE = 14
 # Pattern to detect title page (e.g., "Москва 2025 г.")
 TITLE_PAGE_PATTERN = r"Москва\s+\d{4}\s+г\."
 
+# Margin requirements in cm
+TOP_MARGIN_CM = 2
+BOTTOM_MARGIN_CM = 2
+LEFT_MARGIN_CM = 2
+RIGHT_MARGIN_CM = 1
+
 # -----------------------------
 # Configure Tcl/Tk environment on Windows
 # -----------------------------

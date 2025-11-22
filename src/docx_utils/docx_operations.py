@@ -12,6 +12,7 @@ from docx import Document
 from docx_utils.font_check import check_paragraph_font, check_table_font
 from config.config import ReportItem
 from docx_utils.alignment_check import check_alignment
+from docx_utils.page_margins import check_page_margins
 
 def analyze_docx(docx_path: str) -> Tuple[List[ReportItem], DocumentObject]:
     """
@@ -36,6 +37,8 @@ def analyze_docx(docx_path: str) -> Tuple[List[ReportItem], DocumentObject]:
         check_table_font(table, report)
 
     check_alignment(docx, report)
+    
+    check_page_margins(docx, report)
 
     return report, docx  # Return doc object for optional saving
 
