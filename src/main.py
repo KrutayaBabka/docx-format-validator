@@ -56,20 +56,29 @@ def main():
     docx: DocumentObject
     report, docx = analyze_docx(docx_path)
 
+    for issue in report:
+        run = issue.get('run')
+        run_text = run.text if run else "<No run text>"
+        print(f"Issue found: '{run_text}' - {issue['reason']}")
+        print(f"Context paragraph: '{issue['paragraph_text']}'\n")
+
     total_issues: int = len(report)
 
-    # Save a copy
+    # Save a checked copy of the document
     save_docx(docx, checked_doc_path)
-    print(f"\nChecked file saved as: {checked_doc_path}")
-    print(f"Total font inconsistencies found: {total_issues}")
+    print(f"\n✅ Checked file saved as: {checked_doc_path}")
 
-    # -----------------------------
-    # Analyze pages for issues
-    # -----------------------------
+    # Summary of findings
+    print(f"Total issues found: {total_issues}")
+
     if total_issues > 0:
-        print("All problematic text has been highlighted in red.\n")
+        print("⚠️ Some formatting issues were found and highlighted in red:")
+        print("- Paragraph alignment")
+        print("- First-line, left, and right indents")
+        print("- Line spacing")
+        print("\nPlease review highlighted text and correct formatting as needed.\n")
     else:
-        print("The document fully conforms to the Times New Roman font.")
+        print("🎉 No formatting issues found. The document conforms to the required standards (Times New Roman, 1.5 spacing, correct indents).")
 
 
 if __name__ == "__main__":
