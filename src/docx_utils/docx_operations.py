@@ -1,38 +1,48 @@
-"""
-docx_operations.py
+""" 
+docx_operations.py 
 
-Module for checking DOCX documents for font compliance.
-Highlights runs with incorrect fonts in red and returns the total number of discrepancies.
+Module for checking DOCX documents for font compliance. 
+Highlights runs with incorrect fonts in red and returns the total number of discrepancies. 
 """
 
+from typing import List, Tuple
+from docx.document import Document as DocumentObject
+from docx.text.run import Run
 from docx import Document
 from docx_utils.font_check import check_paragraph_font, check_table_font
 
 
-def check_docx_file(input_file: str, output_file: str):
+def analyze_docx(docx_path: str) -> Tuple[List[Run], DocumentObject]:
     """
     Checks a DOCX file for font compliance with TARGET_FONT.
-    Highlights runs with incorrect fonts in red and saves a copy to output_file.
-
+    Highlights runs with incorrect fonts in red in memory only.
+    
     Args:
-        input_file (str): Path to the original DOCX file.
-        output_file (str): Path to save the modified DOCX file.
-
+        docx_path (str): Path to the original DOCX file.
+    
     Returns:
-        tuple: (total_discrepancies: int, output_file: str)
+        Tuple[List[Run], DocumentObject]: A tuple containing a list of runs with font discrepancies and the loaded Document object with highlights.
     """
-    doc = Document(input_file)
-    report = []
+    docx: DocumentObject = Document(docx_path)
+    report: List[Run] = []
 
     # Check all paragraphs
-    for paragraph in doc.paragraphs:
+    for paragraph in docx.paragraphs:
         check_paragraph_font(paragraph, report)
 
     # Check all tables
-    for table in doc.tables:
+    for table in docx.tables:
         check_table_font(table, report)
 
-    # Save the modified document
-    doc.save(output_file)
+    return report, docx  # Return doc object for optional saving
 
-    return len(report), output_file
+
+def save_docx(docx: DocumentObject, output_path: str):
+    """
+    Saves a DOCX Document object to the specified file.
+
+    Args:
+        docx (DocumentObject): The Document object to save.
+        output_path (str): Path to save the DOCX file.
+    """
+    docx.save(output_path)

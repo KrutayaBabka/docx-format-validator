@@ -6,27 +6,31 @@ highlights the problematic text in red, and saves a new copy of the document.
 Additionally, it analyzes pages for potential issues and reports them.
 """
 
-import os
+
+from docx.document import Document as DocumentObject
+from typing import List
+from docx.text.run import Run
 import tkinter as tk
 from tkinter import filedialog
-from docx_utils.docx_operations import check_docx_file
+from docx_utils.docx_operations import analyze_docx, save_docx
 from page_analysis.page_check import count_issues_by_page
+from pathlib import Path
 
 
 def main():
     # Initialize Tkinter and hide the main window
-    root = tk.Tk()
+    root: tk.Tk = tk.Tk()
     root.withdraw()
 
     # -----------------------------
     # Select the DOCX file
     # -----------------------------
     print("Please select a .docx file...")
-    filename = filedialog.askopenfilename(
+    docx_path: str = filedialog.askopenfilename(
         title="Select a Word document",
         filetypes=[("Word Documents", "*.docx")]
     )
-    if not filename:
+    if not docx_path:
         print("No file selected. Exiting...")
         return
 
@@ -40,14 +44,22 @@ def main():
         return
 
     # Construct the new filename: original_name + "_checked"
-    base_name = os.path.splitext(os.path.basename(filename))[0]
-    new_filename = os.path.join(save_dir, f"{base_name}_checked.docx")
+    base_name: str = Path(docx_path).stem
+    checked_doc_path: Path = Path(save_dir) / f"{base_name}_checked.docx"
 
     # -----------------------------
     # Check the document and save a new copy
     # -----------------------------
-    total_issues, out_file = check_docx_file(filename, output_file=new_filename)
-    print(f"\nChecked file saved as: {out_file}")
+    # Analyze document
+    report: List[Run]
+    docx: DocumentObject
+    report, docx = analyze_docx(docx_path)
+
+    total_issues: int = len(report)
+
+    # Save a copy
+    save_docx(docx, checked_doc_path)
+    print(f"\nChecked file saved as: {checked_doc_path}")
     print(f"Total font inconsistencies found: {total_issues}")
 
     # -----------------------------
@@ -55,7 +67,7 @@ def main():
     # -----------------------------
     if total_issues > 0:
         print("All problematic text has been highlighted in red.\n")
-        pages_with_issues = count_issues_by_page(out_file)
+        pages_with_issues: List[int] = count_issues_by_page(checked_doc_path)
         for page_num in pages_with_issues:
             print(f"Issue detected on page {page_num}")
     else:
