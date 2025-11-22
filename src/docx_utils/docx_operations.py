@@ -1,5 +1,5 @@
 """ 
-docx_operations.py 
+docx_utils/docx_operations.py 
 
 Module for checking DOCX documents for font compliance. 
 Highlights runs with incorrect fonts in red and returns the total number of discrepancies. 
@@ -11,7 +11,7 @@ from docx.text.run import Run
 from docx import Document
 from docx_utils.font_check import check_paragraph_font, check_table_font
 from config.config import ReportItem
-
+from docx_utils.alignment_check import check_alignment
 
 def analyze_docx(docx_path: str) -> Tuple[List[ReportItem], DocumentObject]:
     """
@@ -34,6 +34,8 @@ def analyze_docx(docx_path: str) -> Tuple[List[ReportItem], DocumentObject]:
     # Check all tables
     for table in docx.tables:
         check_table_font(table, report)
+
+    check_alignment(docx, report)
 
     return report, docx  # Return doc object for optional saving
 

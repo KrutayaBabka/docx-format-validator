@@ -1,5 +1,5 @@
 """
-font_check.py
+docx_utils/font_check.py
 
 Module for checking fonts and font sizes in a DOCX document.
 Highlights runs with incorrect fonts/sizes in red and records discrepancies

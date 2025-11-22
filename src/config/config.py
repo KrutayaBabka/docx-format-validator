@@ -1,5 +1,5 @@
 """
-config.py
+config/config.py
 
 Configuration module for report checking project.
 Contains global constants and platform-specific environment setup.
